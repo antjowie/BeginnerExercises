@@ -1,0 +1,5 @@
+﻿  Source.cpp
+c:\users\obsidian\documents\visual studio 2015\projects\tic tac toe\tic tac toe\source.cpp(93): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\obsidian\documents\visual studio 2015\projects\tic tac toe\tic tac toe\source.cpp(107): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\obsidian\documents\visual studio 2015\projects\tic tac toe\tic tac toe\source.cpp(118): warning C4715: 'aiLogic': not all control paths return a value
+  Tic Tac Toe.vcxproj -> c:\users\obsidian\documents\visual studio 2015\Projects\Tic Tac Toe\Debug\Tic Tac Toe.exe
