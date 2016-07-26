@@ -1,0 +1,2 @@
+# BeginnerExercises
+My solutions
