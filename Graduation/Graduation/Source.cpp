@@ -1,13 +1,12 @@
 #include <iostream>
 #include <string>	
 #include <time.h>
+#include <chrono>
+#include <thread> 
+#include <fstream>
 
-//TODOLIST
-//count fixen = mutated en normaal splitsen
-//main fixen
-
-
-
+#define sleeptime std::chrono::seconds(0)
+#define sleep std::this_thread::sleep_for (sleeptime)
 
 struct type {
 	int age;
@@ -18,10 +17,16 @@ struct type {
 	type *next;
 }*root, *adress, *female;
 
-int rmvbammount = 0;
-int count = 0;
-int malecount = 0;
-int femalecount = 0;
+int rmvbammount;
+int count;
+int malecount;
+int femalecount;
+int Mmalecount;
+int Mfemalecount;
+int turn = 0;
+int random;
+std::ofstream output;
+std::string rmvb;
 
 void printbunny();
 void generatebunny(int phase);
@@ -29,9 +34,12 @@ void spawnbunny();
 void gathervalue();
 void killbunny();
 void infestbunny();
+void overflowbunny(int total);
+void insertfile(std::string line, int eventkind, int ammount);
 int main() {
 
 //Initialize 5 starting bunnys
+	std::remove("console output.txt");
 	srand(time(0));
 	root = new type;
 	root->next = 0;
@@ -40,13 +48,23 @@ int main() {
 	printbunny();
 	do{
 		gathervalue();
-		if (malecount >= 1 && femalecount >= 1)
-			for (femalecount; femalecount >= 0; femalecount--)
-				spawnbunny();
+		spawnbunny();
+		infestbunny();
+		killbunny();
+		turn++;
+		if (malecount + femalecount >= 1000)
+			overflowbunny((malecount + femalecount) / 2);
+		std::cout << "\nTurn " << turn << std::endl;
+		insertfile("\nTurn ", 3, turn);
 		printbunny();
+		std::cout << "Turn " << turn << std::endl;
+		std::cout << "Amount of bunnies is " << malecount+ femalecount<< std::endl;
+		insertfile("Turn ", 3, turn);
+		insertfile("\nAmount of bunnies is ", 3, malecount + femalecount);
 	} while (malecount + femalecount != 0);
 
-	std::cout << "How sad, no bunnies to be seen." << std::endl;
+	std::cout << "\nHow sad, no bunnies to be seen." << std::endl;
+	insertfile("\nHow sad, no bunnies to be seen.", 3, 0);
 	return 0;
 }
 
@@ -58,11 +76,16 @@ void printbunny() {
 				if (adress->age == i) {
 					std::string val = (adress->rmvb == true) ? "Positive" : "Negative";
 					std::cout << "Age " << adress->age << "\t| Name " << adress->name << "\t| Sex " << adress->sex << "\t| Color " << adress->color << "\t| Radioactive mutant vampire = " << val << "\t|\n";
+					output.open("console output.txt", std::ios::app);
+					output << "Age " << adress->age << "\t| Name " << adress->name << "\t| Sex " << adress->sex << "\t| Color " << adress->color << "\t| Radioactive mutant vampire = " << val << "\t|\n";
+					output.close();
 				}
 				adress = adress->next;
 			}
 			adress = root->next;
 		}
+	sleep;
+	sleep;
 }
 
 void generatebunny(int phase) {
@@ -77,7 +100,7 @@ void generatebunny(int phase) {
 	adress->next = 0;
 	adress->age = 0;
 	//Names
-	int random = rand() % 10;
+	random = rand() % 10;
 	switch (random) {
 	case 0:
 		adress->name = "Gordon";
@@ -110,8 +133,10 @@ void generatebunny(int phase) {
 		adress->name = "MiBigBut";
 		break;
 	}
-	std::string rmvb = (adress->rmvb == true)? "Radioactive mutant vampire bunny ": "Bunny ";
+	rmvb = (adress->rmvb == true)? "Radioactive mutant vampire bunny ": "Bunny ";
 	std::cout << rmvb << adress->name << " was born!" << std::endl;
+	insertfile(" was born!\n", 2, 0);
+	sleep;
 	//Sex
 	random = rand() % 2;
 	switch (random)	{
@@ -157,7 +182,7 @@ void spawnbunny() {
 	if (adress != 0)
 		while (female->next != nullptr) {
 			female = female->next;
-			if (female->sex == "Female")
+			if (female->sex == "Female" && female->age >= 2 && female->rmvb == false)
 				generatebunny(1);
 		}
 }
@@ -173,8 +198,12 @@ void gathervalue(){
 			adress->age++;
 			if (adress->sex == "Male")
 				malecount++;
-			else
+			if (adress->sex == "Male" && adress->age >= 2)
+				Mmalecount++;
+			if (adress->sex == "Female")
 				femalecount++;
+			if (adress->sex == "Female" && adress->age >= 2)
+				Mfemalecount++;
 			if (adress->rmvb == true)
 				rmvbammount++;
 			adress = adress->next;
@@ -186,14 +215,18 @@ void killbunny() {
 	if (adress != 0)
 		while (adress != nullptr) {
 			if (adress->age == 10 && adress->rmvb == false ) {
-				std::cout << "Bunny " << adress->name << " died of age!";
-				delete adress->next;
-				adress = root;
+				std::cout << "Bunny " << adress->name << " died of age!" << std::endl;
+				adress = adress->next;
+				delete female->next;
+				female = adress;
+				sleep;
 			}
 			else if (adress->age == 50 && adress->rmvb == true) {
-				std::cout << "Bunny " << adress->name << " died of age!";
-				delete adress->next;
-				adress = root;
+				std::cout << "Bunny " << adress->name << " died of age!" << std::endl;
+				adress = adress->next;
+				delete female->next;
+				female = adress;
+				sleep;
 			}
 			adress = adress->next;
 		}
@@ -202,12 +235,48 @@ void killbunny() {
 void infestbunny() {
 	adress = root->next;
 	if (adress != 0)
-		while (adress != nullptr && rmvbammount >= 0) {
+		while (adress != nullptr && rmvbammount > 0) {
 			if (adress->rmvb == false) {
 				adress->rmvb = true;
-				std::cout << "Bunny " << adress->name << " became a radioactive mutant vampire bunny!";
+				std::cout << "Bunny " << adress->name << " became a radioactive mutant vampire bunny!" << std::endl;
+				insertfile("became a radioactive mutant vampire bunny!\n", 0, 0);
 				rmvbammount--;
+				sleep;
 			}
 			adress = adress->next;
 		}
+}
+
+void overflowbunny(int total) {
+	std::cout << "Oh no! There is an abundance of bunny which leeds to a shortage of food! " << total << " Bunnies are dying!";
+	insertfile("Oh no! There is an abundance of bunny which leeds to a shortage of food! ", 1, total);
+	sleep;
+	adress = root->next;
+	for (total; total >= 0; total--) {
+		random = rand() % 1;
+		while (adress != nullptr) {
+			female = adress;
+			if (random == 0) {
+				std::cout << "Bunny " << adress->name << " died of food shortage!" << std::endl;
+				insertfile(" died of food shortage!\n", 0, 0);
+				adress = adress->next;
+				delete female->next;
+				break;
+			}
+			adress = adress->next;
+		}
+	}
+}
+
+void insertfile(std::string line, int eventkind, int ammount) {
+	output.open("console output.txt", std::ios::out | std::ios::app);
+	if (eventkind == 0)
+		output << "Bunny" << adress->name << line;
+	else if (eventkind == 1)
+		output << line << ammount << "Bunnies are dying!\n";
+	else if (eventkind == 2)
+		output << rmvb << adress->name << line;
+	else if (eventkind == 3)
+		output << line;
+	output.close();
 }
