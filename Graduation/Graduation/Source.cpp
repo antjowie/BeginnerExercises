@@ -16,7 +16,7 @@ struct type {
 	std::string color;
 	bool rmvb;
 	type *next;
-}*root, *adress;
+}*root, *adress, *female;
 
 int rmvbammount = 0;
 int count = 0;
@@ -24,7 +24,8 @@ int malecount = 0;
 int femalecount = 0;
 
 void printbunny();
-void generatebunny();
+void generatebunny(int phase);
+void spawnbunny();
 void gathervalue();
 void killbunny();
 void infestbunny();
@@ -35,12 +36,13 @@ int main() {
 	root = new type;
 	root->next = 0;
 	for (int i = 0; i < 5; i++)
-		generatebunny();
+		generatebunny(0);
 	printbunny();
 	do{
 		gathervalue();
-		if (malecount > 1 && femalecount > 1)
-
+		if (malecount >= 1 && femalecount >= 1)
+			for (femalecount; femalecount >= 0; femalecount--)
+				spawnbunny();
 		printbunny();
 	} while (malecount + femalecount != 0);
 
@@ -63,12 +65,12 @@ void printbunny() {
 		}
 }
 
-void generatebunny() {
+void generatebunny(int phase) {
 	
 	//Locates latest list
 	adress = root;
 	if (adress != 0)
-		while (adress->next != 0)
+		while (adress->next != nullptr)
 			adress = adress->next;
 	adress->next = new type;
 	adress = adress->next;
@@ -121,6 +123,7 @@ void generatebunny() {
 		break;
 	}
 	//Color
+	if (phase == 0) {
 	random = rand() % 4;
 	switch (random) {
 	case 0:
@@ -136,6 +139,9 @@ void generatebunny() {
 		adress->color = "spotted";
 		break;
 	}
+	}
+	else 
+		adress->color = female->color; 
 	//rmvb
 	random = rand() % 100 + 1;
 	if (random <= 2)
@@ -144,19 +150,31 @@ void generatebunny() {
 		adress->rmvb = false;
 }
 
+void spawnbunny() {
+	female = root;
+	adress = root;
+
+	if (adress != 0)
+		while (female->next != nullptr) {
+			female = female->next;
+			if (female->sex == "Female")
+				generatebunny(1);
+		}
+}
+
 void gathervalue(){
 	count = 0;
 	rmvbammount = 0;
 	malecount = 0;
 	femalecount = 0;
-	adress = root;
+	adress = root->next;
 	if (adress != 0)
 		while (adress != nullptr) {
 			adress->age++;
 			if (adress->sex == "Male")
-			malecount++;
+				malecount++;
 			else
-			femalecount++;
+				femalecount++;
 			if (adress->rmvb == true)
 				rmvbammount++;
 			adress = adress->next;
@@ -164,7 +182,7 @@ void gathervalue(){
 }
 
 void killbunny() {
-	adress = root;
+	adress = root->next;
 	if (adress != 0)
 		while (adress != nullptr) {
 			if (adress->age == 10 && adress->rmvb == false ) {
@@ -182,11 +200,11 @@ void killbunny() {
 }
 
 void infestbunny() {
-	adress = root;
+	adress = root->next;
 	if (adress != 0)
 		while (adress != nullptr && rmvbammount >= 0) {
 			if (adress->rmvb == false) {
-				adress->rmvb == true;
+				adress->rmvb = true;
 				std::cout << "Bunny " << adress->name << " became a radioactive mutant vampire bunny!";
 				rmvbammount--;
 			}

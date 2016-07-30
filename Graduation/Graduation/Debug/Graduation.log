@@ -1,5 +1,3 @@
 ﻿  Source.cpp
-c:\users\angelo\documents\visual studio 2015\projects\dungeon crawl\beginnerexercises\graduation\graduation\source.cpp(34): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-c:\users\angelo\documents\visual studio 2015\projects\dungeon crawl\beginnerexercises\graduation\graduation\source.cpp(189): warning C4553: '==': operator has no effect; did you intend '='?
-  Graduation.vcxproj -> C:\Users\Angelo\Documents\Visual Studio 2015\Projects\Dungeon Crawl\BeginnerExercises\Graduation\Debug\Graduation.exe
-  Graduation.vcxproj -> C:\Users\Angelo\Documents\Visual Studio 2015\Projects\Dungeon Crawl\BeginnerExercises\Graduation\Debug\Graduation.pdb (Full PDB)
+c:\users\obsidian\documents\c++ projects\beginnerexercises\graduation\graduation\source.cpp(35): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  Graduation.vcxproj -> C:\Users\Obsidian\Documents\C++ projects\BeginnerExercises\Graduation\Debug\Graduation.exe
