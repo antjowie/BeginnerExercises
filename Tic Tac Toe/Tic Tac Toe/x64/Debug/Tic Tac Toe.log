@@ -1,0 +1,6 @@
+﻿  Source.cpp
+c:\users\angelo\documents\visual studio 2015\projects\dungeon crawl\beginnerexercises\tic tac toe\tic tac toe\source.cpp(93): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\angelo\documents\visual studio 2015\projects\dungeon crawl\beginnerexercises\tic tac toe\tic tac toe\source.cpp(107): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\angelo\documents\visual studio 2015\projects\dungeon crawl\beginnerexercises\tic tac toe\tic tac toe\source.cpp(118): warning C4715: 'aiLogic': not all control paths return a value
+  Tic Tac Toe.vcxproj -> C:\Users\Angelo\Documents\Visual Studio 2015\Projects\Dungeon Crawl\BeginnerExercises\Tic Tac Toe\x64\Debug\Tic Tac Toe.exe
+  Tic Tac Toe.vcxproj -> C:\Users\Angelo\Documents\Visual Studio 2015\Projects\Dungeon Crawl\BeginnerExercises\Tic Tac Toe\x64\Debug\Tic Tac Toe.pdb (Full PDB)
