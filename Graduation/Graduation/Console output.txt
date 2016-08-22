@@ -1,0 +1,107 @@
+Bunny 1 was born! 
+Bunny 2 was born! 
+Bunny 3 was born! 
+Bunny 4 was born! 
+Bunny 5 was born! 
+
+---
+ action 0 old val 5 should be 5 real val 5
+
+---
+ action 0 old val 5 should be 5 real val 5
+Bunny 6 was born! 
+Bunny 7 was born! 
+Bunny 8 was born! 
+Bunny 9 was born! 
+
+---
+ action 4 old val 5 should be 9 real val 9
+Bunny 10 was born! 
+Bunny 11 was born! 
+Bunny 12 was born! 
+Bunny 13 was born! 
+
+---
+ action 4 old val 9 should be 13 real val 13
+Bunny 14 was born! 
+Bunny 15 was born! 
+Bunny 16 was born! 
+Bunny 17 was born! 
+
+---
+ action 4 old val 13 should be 17 real val 17
+Bunny 18 was born! 
+Bunny 19 was born! 
+Bunny 20 was born! 
+Bunny 21 was born! 
+Bunny 22 was born! 
+
+---
+ action 5 old val 17 should be 22 real val 22
+Bunny 23 was born! 
+Bunny 24 was born! 
+Bunny 25 was born! 
+Bunny 26 was born! 
+Bunny 27 was born! 
+Bunny 28 was born! 
+Bunny 29 was born! 
+Bunny 30 was born! 
+
+---
+ action 8 old val 22 should be 30 real val 30
+Bunny 31 was born! 
+Bunny 32 was born! 
+Bunny 33 was born! 
+Bunny 34 was born! 
+Bunny 35 was born! 
+Bunny 36 was born! 
+Bunny 37 was born! 
+Bunny 38 was born! 
+Bunny 39 was born! 
+Bunny 40 was born! 
+
+---
+ action 10 old val 30 should be 40 real val 40
+Bunny 41 was born! 
+Bunny 42 was born! 
+Bunny 43 was born! 
+Bunny 44 was born! 
+Bunny 45 was born! 
+Bunny 46 was born! 
+Bunny 47 was born! 
+Bunny 48 was born! 
+Bunny 49 was born! 
+Bunny 50 was born! 
+Bunny 51 was born! 
+Bunny 52 was born! 
+Bunny 53 was born! 
+
+---
+ action 13 old val 40 should be 53 real val 53
+Bunny 54 was born! 
+Bunny 55 was born! 
+Bunny 56 was born! 
+Bunny 57 was born! 
+Bunny 58 was born! 
+Bunny 59 was born! 
+Bunny 60 was born! 
+Bunny 61 was born! 
+Bunny 62 was born! 
+Bunny 63 was born! 
+Bunny 64 was born! 
+Bunny 65 was born! 
+Bunny 66 was born! 
+Bunny 67 was born! 
+Bunny 68 was born! 
+Bunny 69 was born! 
+Bunny 70 was born! 
+Bunny 71 was born! 
+Bunny 72 was born! 
+Bunny 1 died! 
+Bunny 2 died! 
+Bunny 3 died! 
+Bunny 4 died! 
+Bunny 5 died! 
+
+---
+ action 14 old val 53 should be 67 real val 67
