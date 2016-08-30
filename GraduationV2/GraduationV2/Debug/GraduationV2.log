@@ -1,0 +1,3 @@
+﻿  Source.cpp
+c:\users\obsidian\documents\c++ projects\beginnerexercises\graduationv2\graduationv2\source.cpp(43): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  GraduationV2.vcxproj -> C:\Users\Obsidian\Documents\C++ projects\BeginnerExercises\GraduationV2\Debug\GraduationV2.exe
