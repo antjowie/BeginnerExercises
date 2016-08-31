@@ -29,7 +29,7 @@ void contaminate(int &infested);														//Complete
 void generate(int &total, int &fertileFemales);											//Complete
 void spawn(int &total, const std::string &femaleColor = "NULL");						//Complete
 void overPopulation();
-void kill(int &total, const bool &viaOverPopulation = 0);
+void kill(int &total, const bool &viaOverPopulation = false);
 void inserFile();
 
 
@@ -77,6 +77,10 @@ int main() {
 
 
 		//Phase 5
+		//Kills the bunny by age
+		kill(total);
+
+		//Phase 6
 		//Prints the bunny data
 		print(turn);
 	}
@@ -87,6 +91,7 @@ void gatherValues(int &fertileFemales, int &fertileMales, int &infested) {
 
 	//Reset value
 	fertileMales = 0;
+	fertileFemales = 0;
 	infested = 0;
 	if (root != nullptr) {
 		list = root;
@@ -269,13 +274,21 @@ void kill(int &total, const bool &viaOverPopulation) {
 		bunny *destructor;
 		int counter = 0;
 		destructor = root;
-		while (destructor != nullptr) {
 			list = destructor;
-
+		while (destructor != nullptr) {
+			std::cout << counter;
 			//Initiate death by age
-			if (destructor->age == 10 && destructor->radioactiveMutantVampireBunny == false || destructor->age == 50 && destructor->radioactiveMutantVampireBunny == true) {
-
+			if (destructor->age == 10 && destructor->radioactiveMutantVampireBunny == false || destructor->age == 50 && destructor->radioactiveMutantVampireBunny == true || viaOverPopulation == true) {
+				if (counter == 0)
+					std::cout << "REMOVE NODE \a";
+//					root = root->next;
+				else if (destructor->next != nullptr)
+					list = list->next->next;
+				delete destructor;
+				total--;
+				kill(total);
 			}
+			list = destructor;
 			destructor = destructor->next;
 			counter++;
 		}

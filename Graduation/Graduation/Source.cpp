@@ -18,9 +18,6 @@ int MbunnyAmmount = 0;
 int turn = 0;
 int fertile = 0;
 int infested;
-
-int debugAmmount = 0;
-int temptemp = 0;
 int number = 1;
 
 std::string tempRMVB;
@@ -28,7 +25,7 @@ std::string tempRMVB;
 //Structure which contains all the necessary propeties of a bunny
 struct Bunny {
 	int age = 0;
-	int name;
+	std::string name;
 	std::string color;
 	std::string	sex;
 	bool RMVB;
@@ -55,8 +52,6 @@ int main() {
 
 	//Simulator loop
 	while (bunnyAmmount != 0) {
-		temptemp = bunnyAmmount;
-		debugAmmount = 0;
 		gatherValues();
 		if (fertile > 0)
 			spawnBunny();
@@ -91,7 +86,7 @@ void generateBunny(int phase) {
 	adress->age = 0;
 
 	//Switch which enters a name
-	/*
+	
 	switch (rand() % 22) {
 	case George:
 		adress->name = "George";
@@ -159,10 +154,11 @@ void generateBunny(int phase) {
 	case Poku:
 		adress->name = "Poku";
 		break;
+	default:
+		std::cout << "Error\n";
+		break;
 	}
-	*/
-	adress->name = number;
-	number++;
+	
 	//Switch which enters a color
 	if (phase == 0)
 		switch (rand() % 4) {
@@ -194,18 +190,18 @@ void generateBunny(int phase) {
 	//Prints event
 	if (adress->RMVB == true) {
 		std::cout << "Radioactive mutant vampire bunny " << adress->name << " was born!\n";
-		//insertFile("generatebunny rmvb true\n", 2);
+		insertFile("generatebunny rmvb true\n", 2);
 		insertFile(" was born! ", 0);
 		infested++;
 	
 	}
 	else{
 		std::cout << "Bunny " << adress->name << " was born!\n";
-		//insertFile("generatebunny rmvb false\n ", 2);
+		insertFile("generatebunny rmvb false\n ", 2);
 		insertFile(" was born! ", 0);
 	}
 	sleep;
-	debugAmmount++;
+	
 	bunnyAmmount++;
 }
 
@@ -219,12 +215,12 @@ void gatherValues() {
 		adress->age++;
 		if (adress->age == 3 && adress->sex == "female" && adress->RMVB==false) {
 			std::cout << "Bunny " << adress->name << " became fertile\n";
-			//insertFile(" became fertile\n", 0);
+			insertFile(" became fertile\n", 0);
 			sleep;
 		}
 		if (adress->age == 3 && adress->sex == "male" && adress->RMVB == false) {
 			std::cout << "Bunny " << adress->name << " is ready to mate\n";
-			//insertFile(" is ready to mate\n", 0);
+			insertFile(" is ready to mate\n", 0);
 			fertile++;
 			sleep;
 		}
@@ -255,7 +251,7 @@ void contaminationBunny() {
 				if (adress->sex == "male")
 					fertile--;
 				std::cout << "Bunny " << adress->name << " has been contaminated\n";
-				//insertFile(" has been contaminated\n", 0);
+				insertFile(" has been contaminated\n", 0);
 				infested--;
 				sleep;
 			}
@@ -265,35 +261,36 @@ void contaminationBunny() {
 
 void killBunny() {
 	adress = root;
-	if (adress != nullptr)
+	if (adress != nullptr){
+			Bunny * linker;
 		while (adress != nullptr) {
-			Bunny * linker = adress;
 			//Checks RMVB value because they die in 50 years
-			if (adress->age == 10 && adress->RMVB == false) {
+			if (linker->age == 10 && linker->RMVB == false) {
 				std::cout << "Bunny " << adress->name << " died!\n";
-				//insertFile("killbunny rmvb false\n", 2);
+				insertFile("killbunny rmvb false\n", 2);
 				insertFile(" died! ", 0);
 				adress = adress->next;
 				delete linker;
 				bunnyAmmount--;
-				debugAmmount--;
+				
 				if (adress->sex == "male")
 					fertile--;
 				sleep;
 			}
-			else if (adress->age == 50 && adress->RMVB == true) {
+			else if (adress->age == 50 && linker->RMVB == true) {
 				std::cout << "Bunny " << adress->name << " died!\n";
-				//insertFile("killbunny rmvb true\n", 2);
+				insertFile("killbunny rmvb true\n", 2);
 				insertFile(" died! ", 0);
 				adress = adress->next;
 				delete linker;
 				bunnyAmmount--;
-				debugAmmount--;
+				
 				sleep;
 			}
 			else
 				adress = adress->next;
 		}
+	}
 }
 
 void overpopulationBunny() {
@@ -312,7 +309,7 @@ void overpopulationBunny() {
 			delete linker;
 			tempbunnyAmmount--;
 			bunnyAmmount--;
-			debugAmmount--;
+			
 			if (adress->sex == "male"&&adress->RMVB == false)
 				fertile--;
 			sleep;
@@ -333,8 +330,8 @@ void printBunny() {
 			while (adress != nullptr) {
 				if (adress->age == i) {
 					tempRMVB = (adress->RMVB == true) ? "positive" : "negative";
-					//std::cout << "Age " << adress->age << "\t| Name " << adress->name << "\t| Sex " << adress->sex << "\t| Color " << adress->color << "\t| RMVB " << tempRMVB << "\t| " << std::endl;
-					//insertFile("", 4);
+					std::cout << "Age " << adress->age << "\t| Name " << adress->name << "\t| Sex " << adress->sex << "\t| Color " << adress->color << "\t| RMVB " << tempRMVB << "\t| " << std::endl;
+					insertFile("", 4);
 				}
 				adress = adress->next;
 			}
@@ -351,7 +348,6 @@ void insertFile(std::string line, int phase) {
 	//phase 2 "line"
 	//phase 3 \nAll the bunnies have died! The bunnies existed for ..turn.. "line"
 	//phase 4 printBunny
-	//phase 5 debug
 	std::ofstream insert("Console output.txt", std::ios::out | std::ios::app);
 	if (insert.is_open()) {
 		switch (phase) {
@@ -370,9 +366,9 @@ void insertFile(std::string line, int phase) {
 		case 4:
 			insert << "Age " << adress->age << "\t| Name " << adress->name << "\t| Sex " << adress->sex << "\t| Color " << adress->color << "\t| RMVB " << tempRMVB << "\t|" << std::endl;
 			break;
-		case 5:
-			insert << line << " action " << debugAmmount << " old val " << temptemp << " should be " << temptemp+debugAmmount << " real val " << bunnyAmmount << std::endl;
-			break; 
+		default:
+			insert << "Error\n";
+			break;
 		}
 		insert.close();
 	}
