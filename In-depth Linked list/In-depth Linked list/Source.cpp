@@ -110,6 +110,8 @@ void removeSong(const int & number, const std::string & title, int & total){
 	//runs remove middle node program if the song isn't the last one
 	if (destructor->next != nullptr)
 		list->next = list->next->next;
+	else
+		list->next = nullptr;
 	delete destructor;
 }
 
