@@ -6,7 +6,7 @@
 #include <fstream>
 
 //Defines a sleep timer
-#define sleep std::this_thread::sleep_for (std::chrono::seconds(0))
+#define sleep std::this_thread::sleep_for (std::chrono::seconds(1))
 
 //Names and color are in enumerated value for better readability in function generatebunny
 enum name { George, Leeroy, Frogsron, Bob, Zakje, Patat, Kebab, Auto, Nope, Lamp, Mac, KFC, Bal, Rondje, Kip, Comb, Schipje, RNG, Weeb, Dota, EUW, Poku };
@@ -28,8 +28,8 @@ void print(const int &turn);															//Complete
 void contaminate(int &infested);														//Complete
 void generate(int &total, int &fertileFemales);											//Complete
 void spawn(int &total, const std::string &femaleColor = "NULL");						//Complete
-void overPopulation();
-void kill(int &total, const bool &viaOverPopulation = false);
+void overPopulation(int &total);														//Complete
+void kill(int &total, const bool &viaOverPopulation = false);							//Complete
 void inserFile();
 
 
@@ -56,7 +56,7 @@ int main() {
 	 Print the bunnies
 	*/
 
-	while (total >= 0) {
+	while (total > 0) {
 		turn++;
 
 		//Phase 1
@@ -74,7 +74,8 @@ int main() {
 
 		//Phase 4
 		//Check for overpopulation
-
+		if (total >= 1000)
+			overPopulation(total);
 
 		//Phase 5
 		//Kills the bunny by age
@@ -84,6 +85,7 @@ int main() {
 		//Prints the bunny data
 		print(turn);
 	}
+	std::cout << "\nEND\n";
 	return 0;
 }
 
@@ -93,6 +95,7 @@ void gatherValues(int &fertileFemales, int &fertileMales, int &infested) {
 	fertileMales = 0;
 	fertileFemales = 0;
 	infested = 0;
+
 	if (root != nullptr) {
 		list = root;
 		while (list != nullptr) {
@@ -107,7 +110,6 @@ void gatherValues(int &fertileFemales, int &fertileMales, int &infested) {
 			else if (list->age >= 3 && list->sex == "Male" && list->radioactiveMutantVampireBunny == false)
 				fertileMales++;
 			
-			
 			list->age++;
 			list = list->next;
 		}
@@ -118,6 +120,8 @@ void contaminate(int &infested) {
 	if (root != nullptr) {
 		list = root;
 		while (infested > 0 && list != nullptr) {
+
+			//Turns false rmvb bunnies into true rmvb bunnies for each true rmvb bunny
 			if (list->radioactiveMutantVampireBunny == false){
 				list->radioactiveMutantVampireBunny = true;
 				infested--;
@@ -129,6 +133,8 @@ void contaminate(int &infested) {
 
 void generate(int &total, int &fertileFemales) {
 	bunny *female = root;
+
+	//While fertilefemale >= 0 (gathered at function gathervalue) this loop runs
 	for (fertileFemales; fertileFemales >= 0; fertileFemales--) {
 		if (female->age >= 3 && female->sex == "Female" && female->radioactiveMutantVampireBunny == false)
 			spawn(total, female->color);
@@ -269,27 +275,38 @@ void spawn(int &total, const std::string &femaleColor) {
 	sleep;
 }
 
+void overPopulation(int &total) {
+	int tempTotal = total / 2;
+
+	//Keeps killing until half of total are left
+	while (tempTotal > 0) {
+		kill(total, true);
+		tempTotal--;
+	}
+}
+
 void kill(int &total, const bool &viaOverPopulation) {
 	if (root != nullptr) {
 		bunny *destructor;
 		int counter = 0;
 		destructor = root;
-			list = destructor;
+		list = destructor;
 		while (destructor != nullptr) {
-			std::cout << counter;
 			//Initiate death by age
 			if (destructor->age == 10 && destructor->radioactiveMutantVampireBunny == false || destructor->age == 50 && destructor->radioactiveMutantVampireBunny == true || viaOverPopulation == true) {
-				if (counter == 0)
-					std::cout << "REMOVE NODE \a";
-//					root = root->next;
+				if (counter == 0) 
+					root = root->next;
 				else if (destructor->next != nullptr)
-					list = list->next->next;
+					list->next = list->next->next;
+				destructor = nullptr;
 				delete destructor;
 				total--;
-				kill(total);
+				if (viaOverPopulation != true)
+					kill(total);
 			}
 			list = destructor;
-			destructor = destructor->next;
+			if (destructor != nullptr)
+				destructor = destructor->next;
 			counter++;
 		}
 	}
