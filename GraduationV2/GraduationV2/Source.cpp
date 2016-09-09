@@ -6,7 +6,7 @@
 #include <fstream>
 
 //Defines a sleep timer
-#define sleep std::this_thread::sleep_for (std::chrono::seconds(1))
+#define sleep std::this_thread::sleep_for (std::chrono::seconds(0))
 
 //Names and color are in enumerated value for better readability in function generatebunny
 enum name { George, Leeroy, Frogsron, Bob, Zakje, Patat, Kebab, Auto, Nope, Lamp, Mac, KFC, Bal, Rondje, Kip, Comb, Schipje, RNG, Weeb, Dota, EUW, Poku };
@@ -24,13 +24,13 @@ struct bunny {
 
 //Function declarations
 void gatherValues(int &fertileFemales, int &fertileMales, int &infested);				//Complete
-void print(const int &turn);															//Complete
 void contaminate(int &infested);														//Complete
 void generate(int &total, int &fertileFemales);											//Complete
 void spawn(int &total, const std::string &femaleColor = "NULL");						//Complete
 void overPopulation(int &total);														//Complete
 void kill(int &total, const bool &viaOverPopulation = false);							//Complete
-void inserFile();
+void print(const int &turn);															//Complete
+void insertFile(const std::string &info, const int &phase, const int &extra = 0);		//Complete
 
 
 int main() {
@@ -41,6 +41,7 @@ int main() {
 	int infested = 0;
 	root = new bunny;
 	srand(time(0));
+	remove ("output.txt");
 
 	//Generate 5 bunnies
 	while (total != 5)
@@ -85,7 +86,9 @@ int main() {
 		//Prints the bunny data
 		print(turn);
 	}
-	std::cout << "\nEND\n";
+	std::cout << "\n...\n It appears that all of the bunnies have died .-.\n The end\a\n";
+	insertFile("\n...\n It appears that all of the bunnies have died .-.\n The end\n", 5);
+	sleep;
 	return 0;
 }
 
@@ -124,6 +127,8 @@ void contaminate(int &infested) {
 			//Turns false rmvb bunnies into true rmvb bunnies for each true rmvb bunny
 			if (list->radioactiveMutantVampireBunny == false){
 				list->radioactiveMutantVampireBunny = true;
+				std::cout << "Contaminated bunny " << list->name << std::endl;
+				insertFile("Contaminated bunny ", 1);
 				infested--;
 			}
 				list = list->next;
@@ -268,7 +273,8 @@ void spawn(int &total, const std::string &femaleColor) {
 	else{
 		std::cout << "Bunny " << list->name << " is born!\n";
 	}
-	
+	insertFile(" is born!\n", 2);
+
 	//Allows the first node to be modified
 	list->isModified = true;
 	total++;
@@ -277,7 +283,9 @@ void spawn(int &total, const std::string &femaleColor) {
 
 void overPopulation(int &total) {
 	int tempTotal = total / 2;
-
+	std::cout << "Big trouble! A bunny overpopulation is occuring, there is a shortage of food!\n";
+	insertFile("Big trouble! A bunny overpopulation is occuring, there is a shortage of food!\n", 5);
+	sleep;
 	//Keeps killing until half of total are left
 	while (tempTotal > 0) {
 		kill(total, true);
@@ -294,6 +302,12 @@ void kill(int &total, const bool &viaOverPopulation) {
 		while (destructor != nullptr) {
 			//Initiate death by age
 			if (destructor->age == 10 && destructor->radioactiveMutantVampireBunny == false || destructor->age == 50 && destructor->radioactiveMutantVampireBunny == true || viaOverPopulation == true) {
+				if (destructor->radioactiveMutantVampireBunny == true)
+				std::cout << "Radioactive mutant vampire bunny " << destructor->name << " died!\n";
+				else
+				std::cout << "Bunny " << destructor->name << " died!\n";
+
+				insertFile(" died!\n", 2);
 				if (counter == 0) 
 					root = root->next;
 				else if (destructor->next != nullptr)
@@ -301,6 +315,7 @@ void kill(int &total, const bool &viaOverPopulation) {
 				destructor = nullptr;
 				delete destructor;
 				total--;
+				sleep;
 				if (viaOverPopulation != true)
 					kill(total);
 			}
@@ -314,6 +329,7 @@ void kill(int &total, const bool &viaOverPopulation) {
 
 void print(const int &turn) {
 	std::cout << "\nTurn " << turn << "\nListing bunnies...\n";
+	insertFile("\nListing bunnies...\n", 4, turn);
 	sleep;
 
 	//Fail-safe if no bunnies are found (otherwise will result in a crash)
@@ -328,14 +344,66 @@ void print(const int &turn) {
 				if (list->age == i) {
 					std::string tempRadioactiveMutantVampireBunny = (list->radioactiveMutantVampireBunny == true) ? "Positive" : "Negative";
 					std::cout << "Name " << list->name << "\tsex " << list->sex << "\tage " << list->age << "\tcolor " << list->color << "\tRMVB " << tempRadioactiveMutantVampireBunny << std::endl;
+					insertFile(tempRadioactiveMutantVampireBunny, 3);
 				}
 				list = list->next;
 			}
 			list = root;
 		}
+		std::cout << "\n";
+		insertFile("\n", 5);
 		sleep;
 	}
-	else
+	else {
 		std::cout << "No bunnies to be found!\n";
+		insertFile("No bunnies to be found!\n", 5);
+	}
 	sleep;
+}
+
+void insertFile(const std::string &info, const int &phase, const int &extra) {
+	/*
+	Phases
+	 Phase 1: _INFO_ _NAME_ \n
+	 Phase 2: (Radioactive mutant vampire )bunny _NAME_ _INFO_
+	 Phase 3: for funtion print
+	 Phase 4: \nTurn _EXTRA_ _INFO_
+	 phase 5: _INFO_
+	*/
+
+	std::ofstream output ("output.txt", std::ios::out | std::ios::app);
+	if (output.is_open()) {
+		switch (phase) {
+		case 1:
+			output << info << list->name << "\n";
+			break;
+		case 2:
+			if (list->radioactiveMutantVampireBunny == true)
+				output << "Radioactive mutant vampire bunny " << list->name << info;
+			else
+				output << "Bunny " << list->name << info;
+			break;
+		case 3:
+			output << "Name " << list->name << "\tsex " << list->sex << "\tage " << list->age << "\tcolor " << list->color << "\tRMVB " << info << std::endl;
+			break;
+		case 4:
+			output << "\nTurn " << extra << info;
+			break;
+		case 5:
+			output << info;
+			break;
+		default:
+			std::cout << "AN ERROR OCCURED! (function insertFile unknown phase value)\n";
+			output << "AN ERROR OCCURED! (function insertFile unknown phase value)\n";
+			sleep;
+			break;
+		}
+		output.close();
+	}
+	else
+	{
+		std::cout << "AN ERROR OCCURED! (output.txt can't be opened)\n";
+		output << "AN ERROR OCCURED! (output.txt can't be opened)\n";
+		sleep;
+	}
 }
