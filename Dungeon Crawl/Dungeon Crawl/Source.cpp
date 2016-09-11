@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <time.h>
 #include <conio.h>
@@ -12,6 +13,9 @@ char board[10][20];
 
 void printboard() {
 
+	//Fake refresh
+	std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+
 	//Initialize the board with correct values (this will deny ghosting)
 	for (int y = 0; y < 10; y++)
 		for (int x = 0; x < 20; x++)
@@ -19,20 +23,17 @@ void printboard() {
 
 	//Inserts entities
 	board[playercods.y][playercods.x] = 'G';
-	for (int i = 0; i < 5; i++){
+	for (int i = 0; i < 5; i++) {
 		board[trap[i].y][trap[i].x] = 'T';
 		board[enemy[i].y][enemy[i].x] = 'E';
 	}
 	board[finish.y][finish.x] = 'X';
 	//Prints board
-	for (int y = 0; y < 10; y++){
+	for (int y = 0; y < 10; y++) {
 		for (int x = 0; x < 20; x++)
 			std::cout << board[y][x];
 		std::cout << "\n";
 	}
-	
-	//Fake refresh
-	std::cout << '\n' << '\n' << '\n' << '\n' << '\n' << '\n' << '\n' << '\n' << '\n' << '\n' << std::endl;
 }
 
 bool traps() {
@@ -45,7 +46,7 @@ bool traps() {
 void user_input() {
 
 	//Gets player input
-	do{
+	do {
 		char key = _getch();
 		switch (key) {
 		case 'w':
@@ -83,10 +84,10 @@ bool enemies() {
 	for (int i = 0; i < 5; i++)
 		if (enemy[i].y == playercods.y && enemy[i].x == playercods.x)
 			return true;
-	
+
 	//Makes enemies move
 	for (int i = 0; i < 5; i++) {
-	int dir = rand() % 4;
+		int dir = rand() % 4;
 		if (dir == 0)
 			enemy[i].x--;
 		else if (dir == 1)
@@ -98,49 +99,48 @@ bool enemies() {
 	}
 
 	//Control loop
-	for (int i = 0; i < 5; i++) 
+	for (int i = 0; i < 5; i++)
 		if (enemy[i].y == playercods.y && enemy[i].x == playercods.x)
 			return true;
-		
-			return false;
+
+	return false;
 }
 
-int main(){
+int main() {
 	//Initialize placement of entities
-		//Player
+	//Player
 	playercods.y = 2;
 	playercods.x = 2;
-	
-		//Traps
+
+	//Traps
 	srand(time(NULL));
 	for (int i = 0; i < 5; i++) {
 		trap[i].y = rand() % 6 + 3;
 		trap[i].x = rand() % 16 + 3;
 	}
 
-		//Enemies
+	//Enemies
 	for (int i = 0; i < 5; i++) {
 		enemy[i].y = rand() % 6 + 3;
 		enemy[i].x = rand() % 16 + 3;
 	}
-		
-		//Finish
+
+	//Finish
 	finish.y = 8;
 	finish.x = 17;
 
 	//Game loop
-	while (detectwin != false){
-	printboard();	
-	if (traps() == true || enemies() == true || detectwin() == true)
-		break;
-	user_input();
+	while (detectwin != false) {
+		printboard();
+		if (traps() == true || enemies() == true || detectwin() == true)
+			break;
+		user_input();
 	}
-	
+
 	printboard();
-	if (traps() == true ||enemies() == true)
+	if (traps() == true || enemies() == true)
 		std::cout << "\n\n You died!\n";
 	else
 		std::cout << "\n\n You won!\n";
 	return 0;
 }
-

@@ -1,3 +1,0 @@
-﻿  Source.cpp
-c:\users\obsidian\documents\visual studio 2015\projects\dungeon crawl\dungeon crawl\source.cpp(79): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-  Dungeon Crawl.vcxproj -> c:\users\obsidian\documents\visual studio 2015\Projects\Dungeon Crawl\Debug\Dungeon Crawl.exe
