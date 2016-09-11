@@ -4,9 +4,10 @@
 #include <chrono>
 #include <thread> 
 #include <fstream>
+#include <conio.h>
 
 //Defines a sleep timer
-#define sleep std::this_thread::sleep_for (std::chrono::seconds(0))
+#define sleep std::this_thread::sleep_for (std::chrono::seconds(1))
 
 //Names and color are in enumerated value for better readability in function generatebunny
 enum name { George, Leeroy, Frogsron, Bob, Zakje, Patat, Kebab, Auto, Nope, Lamp, Mac, KFC, Bal, Rondje, Kip, Comb, Schipje, RNG, Weeb, Dota, EUW, Poku };
@@ -27,11 +28,10 @@ void gatherValues(int &fertileFemales, int &fertileMales, int &infested);				//C
 void contaminate(int &infested);														//Complete
 void generate(int &total, int &fertileFemales);											//Complete
 void spawn(int &total, const std::string &femaleColor = "NULL");						//Complete
-void overPopulation(int &total);														//Complete
+void overPopulation(int &total, const bool &viaMassMurder = false);						//Complete
 void kill(int &total, const bool &viaOverPopulation = false);							//Complete
 void print(const int &turn);															//Complete
 void insertFile(const std::string &info, const int &phase, const int &extra = 0);		//Complete
-
 
 int main() {
 	int total = 0;
@@ -42,6 +42,8 @@ int main() {
 	root = new bunny;
 	srand(time(0));
 	remove ("output.txt");
+	insertFile("Welcome to the bunny daily life simulator!\n", 5);
+	sleep;
 
 	//Generate 5 bunnies
 	while (total != 5)
@@ -59,6 +61,11 @@ int main() {
 
 	while (total > 0) {
 		turn++;
+
+		//Checks if k is pressed
+		if(_kbhit())
+			if (_getch() == 'k')
+				overPopulation(total, true);
 
 		//Phase 1
 		//Gathers the values for generate and adds age to the bunnies
@@ -86,7 +93,6 @@ int main() {
 		//Prints the bunny data
 		print(turn);
 	}
-	std::cout << "\n...\n It appears that all of the bunnies have died .-.\n The end\a\n";
 	insertFile("\n...\n It appears that all of the bunnies have died .-.\n The end\n", 5);
 	sleep;
 	return 0;
@@ -127,7 +133,6 @@ void contaminate(int &infested) {
 			//Turns false rmvb bunnies into true rmvb bunnies for each true rmvb bunny
 			if (list->radioactiveMutantVampireBunny == false){
 				list->radioactiveMutantVampireBunny = true;
-				std::cout << "Contaminated bunny " << list->name << std::endl;
 				insertFile("Contaminated bunny ", 1);
 				infested--;
 			}
@@ -267,12 +272,6 @@ void spawn(int &total, const std::string &femaleColor) {
 	list->radioactiveMutantVampireBunny = (rand() % 100 >= 98) ? true : false;
 
 	//Prints the event
-	if (list->radioactiveMutantVampireBunny == true) {
-		std::cout << "Radioactive mutant vampire bunny " << list->name << " is born!\n";
-	}
-	else{
-		std::cout << "Bunny " << list->name << " is born!\n";
-	}
 	insertFile(" is born!\n", 2);
 
 	//Allows the first node to be modified
@@ -281,10 +280,15 @@ void spawn(int &total, const std::string &femaleColor) {
 	sleep;
 }
 
-void overPopulation(int &total) {
+void overPopulation(int &total, const bool &viaMassMurder) {
 	int tempTotal = total / 2;
-	std::cout << "Big trouble! A bunny overpopulation is occuring, there is a shortage of food!\n";
-	insertFile("Big trouble! A bunny overpopulation is occuring, there is a shortage of food!\n", 5);
+	if (viaMassMurder == false) {
+		insertFile("Big trouble! A bunny overpopulation is occuring, there is a shortage of food!\n", 5);
+	}
+	else {
+		insertFile("You've initiated a mass murder!\n", 5);
+	}
+	
 	sleep;
 	//Keeps killing until half of total are left
 	while (tempTotal > 0) {
@@ -302,11 +306,6 @@ void kill(int &total, const bool &viaOverPopulation) {
 		while (destructor != nullptr) {
 			//Initiate death by age
 			if (destructor->age == 10 && destructor->radioactiveMutantVampireBunny == false || destructor->age == 50 && destructor->radioactiveMutantVampireBunny == true || viaOverPopulation == true) {
-				if (destructor->radioactiveMutantVampireBunny == true)
-				std::cout << "Radioactive mutant vampire bunny " << destructor->name << " died!\n";
-				else
-				std::cout << "Bunny " << destructor->name << " died!\n";
-
 				insertFile(" died!\n", 2);
 				if (counter == 0) 
 					root = root->next;
@@ -328,7 +327,6 @@ void kill(int &total, const bool &viaOverPopulation) {
 }
 
 void print(const int &turn) {
-	std::cout << "\nTurn " << turn << "\nListing bunnies...\n";
 	insertFile("\nListing bunnies...\n", 4, turn);
 	sleep;
 
@@ -343,21 +341,17 @@ void print(const int &turn) {
 				//Prints bunny data if age is the same
 				if (list->age == i) {
 					std::string tempRadioactiveMutantVampireBunny = (list->radioactiveMutantVampireBunny == true) ? "Positive" : "Negative";
-					std::cout << "Name " << list->name << "\tsex " << list->sex << "\tage " << list->age << "\tcolor " << list->color << "\tRMVB " << tempRadioactiveMutantVampireBunny << std::endl;
 					insertFile(tempRadioactiveMutantVampireBunny, 3);
 				}
 				list = list->next;
 			}
 			list = root;
 		}
-		std::cout << "\n";
 		insertFile("\n", 5);
 		sleep;
 	}
-	else {
-		std::cout << "No bunnies to be found!\n";
+	else 
 		insertFile("No bunnies to be found!\n", 5);
-	}
 	sleep;
 }
 
@@ -376,21 +370,29 @@ void insertFile(const std::string &info, const int &phase, const int &extra) {
 		switch (phase) {
 		case 1:
 			output << info << list->name << "\n";
+			std::cout << info << list->name << "\n";
 			break;
 		case 2:
-			if (list->radioactiveMutantVampireBunny == true)
+			if (list->radioactiveMutantVampireBunny == true) {
 				output << "Radioactive mutant vampire bunny " << list->name << info;
-			else
+				std::cout << "Radioactive mutant vampire bunny " << list->name << info;
+			}
+			else {
 				output << "Bunny " << list->name << info;
+				std::cout << "Bunny " << list->name << info;
+			}
 			break;
 		case 3:
 			output << "Name " << list->name << "\tsex " << list->sex << "\tage " << list->age << "\tcolor " << list->color << "\tRMVB " << info << std::endl;
+			std::cout << "Name " << list->name << "\tsex " << list->sex << "\tage " << list->age << "\tcolor " << list->color << "\tRMVB " << info << std::endl;
 			break;
 		case 4:
 			output << "\nTurn " << extra << info;
+			std::cout << "\nTurn " << extra << info;
 			break;
 		case 5:
 			output << info;
+			std::cout << info;
 			break;
 		default:
 			std::cout << "AN ERROR OCCURED! (function insertFile unknown phase value)\n";
