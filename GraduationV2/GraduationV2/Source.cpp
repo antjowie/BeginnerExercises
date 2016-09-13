@@ -7,43 +7,55 @@
 #include <conio.h>
 
 //Defines a sleep timer
-#define sleep std::this_thread::sleep_for (std::chrono::seconds(1))
+#define sleep std::this_thread::sleep_for (std::chrono::seconds(0))
 
 //Names and color are in enumerated value for better readability in function generatebunny
 enum name { George, Leeroy, Frogsron, Bob, Zakje, Patat, Kebab, Auto, Nope, Lamp, Mac, KFC, Bal, Rondje, Kip, Comb, Schipje, RNG, Weeb, Dota, EUW, Poku };
 enum color { White, Black, Brown, Sprouts };
+char grid[80][80];
+
 
 struct bunny {
 	std::string name;
 	std::string color;
 	std::string sex;
 	int age = 0;
+	int x;
+	int y;
+	char icon;
 	bool radioactiveMutantVampireBunny;
 	bool isModified = false;
 	bunny *next = nullptr;
 }*root, *list;
 
 //Function declarations
-void gatherValues(int &fertileFemales, int &fertileMales, int &infested);				//Complete
-void contaminate(int &infested);														//Complete
-void generate(int &total, int &fertileFemales);											//Complete
-void spawn(int &total, const std::string &femaleColor = "NULL");						//Complete
-void overPopulation(int &total, const bool &viaMassMurder = false);						//Complete
-void kill(int &total, const bool &viaOverPopulation = false);							//Complete
-void print(const int &turn);															//Complete
-void insertFile(const std::string &info, const int &phase, const int &extra = 0);		//Complete
+void gatherValues(int &fertileFemales, int &fertileMales);																		//Complete
+void contaminateSearch(int x = 0, int y = 0);																					//Complete
+void contaminateExecute(const int &infectedx, const int &infectedy);																	
+void generate(int &total, int &fertileFemales);																					//Complete
+void spawn(int &total, const std::string &femaleColor = "NULL", const int &femalex = 0, const int &femaley = 0);				//Complete
+void overPopulation(int &total, const bool &viaMassMurder = false);																//Complete
+void kill(int &total, const bool &viaOverPopulation = false);																	//Complete
+void print(const int &turn);																									//Complete
+void insertGrid(void);																											//Complete
+void insertFile(const std::string &info, const int &phase, const int &extra = 0, const char &xy = '0');							//Complete
 
 int main() {
 	int total = 0;
 	int turn = 0;
 	int fertileMale = 0;
 	int fertileFemale = 0;
-	int infested = 0;
 	root = new bunny;
 	srand(time(0));
 	remove ("output.txt");
-	insertFile("Welcome to the bunny daily life simulator!\n", 5);
+	
+	insertFile("Welcome to the bunny daily life simulator! (pressing \'k\' will initiate a mass murder!)\n", 5);
 	sleep;
+
+	//Fills grid with dots
+	for (int x = 0; x < 80; x++)
+		for (int y = 0; y < 80; y++)
+			grid[x][y] = '.';
 
 	//Generate 5 bunnies
 	while (total != 5)
@@ -56,6 +68,7 @@ int main() {
 	 Spawn new bunnies
 	 Check for overpopulation
 	 Kill bunnies
+	 Insert grid
 	 Print the bunnies
 	*/
 
@@ -69,11 +82,11 @@ int main() {
 
 		//Phase 1
 		//Gathers the values for generate and adds age to the bunnies
-		gatherValues(fertileFemale, fertileMale, infested);
+		gatherValues(fertileFemale, fertileMale);
 
 		//Phase 2
 		//Looks to contaminate bunnies
-		contaminate(infested);
+		contaminateSearch();
 
 		//Phase 3
 		//Checks the values to see if new bunnies will be spawned
@@ -90,69 +103,75 @@ int main() {
 		kill(total);
 
 		//Phase 6
+		//Inserts bunny xy into grid
+		insertGrid();
+		//Phase 7
 		//Prints the bunny data
-		print(turn);
+		print(turn); 
 	}
 	insertFile("\n...\n It appears that all of the bunnies have died .-.\n The end\n", 5);
 	sleep;
 	return 0;
 }
 
-void gatherValues(int &fertileFemales, int &fertileMales, int &infested) {
+void gatherValues(int &fertileFemales, int &fertileMales) {
 
 	//Reset value
 	fertileMales = 0;
 	fertileFemales = 0;
-	infested = 0;
 
 	if (root != nullptr) {
 		list = root;
 		while (list != nullptr) {
 			
-			//Checks the value for function contaminate
-			if (list->radioactiveMutantVampireBunny == true)
-				infested++;
-			
 			//Checks the values for function generate
-			if (list->age >= 3 && list->sex == "Female" && list->radioactiveMutantVampireBunny == false)
+			if (list->age >= 2 && list->sex == "Female" && list->radioactiveMutantVampireBunny == false)
 				fertileFemales++;
-			else if (list->age >= 3 && list->sex == "Male" && list->radioactiveMutantVampireBunny == false)
+			else if (list->age >= 2 && list->sex == "Male" && list->radioactiveMutantVampireBunny == false)
 				fertileMales++;
-			
+	
 			list->age++;
 			list = list->next;
 		}
 	}
 }
 
-void contaminate(int &infested) {
-	if (root != nullptr) {
-		list = root;
-		while (infested > 0 && list != nullptr) {
-
-			//Turns false rmvb bunnies into true rmvb bunnies for each true rmvb bunny
-			if (list->radioactiveMutantVampireBunny == false){
-				list->radioactiveMutantVampireBunny = true;
-				insertFile("Contaminated bunny ", 1);
-				infested--;
+void contaminateSearch(int x, int y) {
+	for (int x; x<80; x++)
+		for (int y; y < 80; y++) {
+			if (grid[x][y] == 'X') {
+				if (x != 79 && grid[x + 1][y])
+					contaminateExecute(x + 1, y);
+				else if (x != 0 && grid[x - 1][y])
+					contaminateExecute(x - 1, y);
+				else if (y != 79 && grid[x][y + 1])
+					contaminateExecute(x, y + 1);
+				else if (y != 0 && grid[x][y - 1])
+					contaminateExecute(x, y - 1);
 			}
-				list = list->next;
 		}
+}
+
+void contaminateExecute(const int &infectedx, const int &infectedy) {
+	list = root;
+	while (list != nullptr) {
+
 	}
 }
 
 void generate(int &total, int &fertileFemales) {
 	bunny *female = root;
-
 	//While fertilefemale >= 0 (gathered at function gathervalue) this loop runs
-	for (fertileFemales; fertileFemales >= 0; fertileFemales--) {
-		if (female->age >= 3 && female->sex == "Female" && female->radioactiveMutantVampireBunny == false)
-			spawn(total, female->color);
+	while (fertileFemales >= 0 && female != nullptr) {
+		if (female->age >= 3 && female->sex == "Female" && female->radioactiveMutantVampireBunny == false) {
+			spawn(total, female->color, female->x, female->y);
+			fertileFemales--;
+		}
 		female = female->next;
 	}
 }
 
-void spawn(int &total, const std::string &femaleColor) {
+void spawn(int &total, const std::string &femaleColor, const int &femalex, const int &femaley) {
 	list = root;
 	//Travers the nodes
 	while (list->next != nullptr)
@@ -162,7 +181,6 @@ void spawn(int &total, const std::string &femaleColor) {
 		list->next = new bunny;
 		list = list->next;
 	}
-
 	//Names bunny
 	switch (rand() % 22) {
 	case George:
@@ -232,7 +250,7 @@ void spawn(int &total, const std::string &femaleColor) {
 		list->name = "Poku";
 		break;
 	default:
-		std::cout << "Error in function generate (name)!\a\n";
+		insertFile("Error in function generate (name)!\a\n", 5);
 	}
 
 	//Decides sex of the bunny 
@@ -244,7 +262,7 @@ void spawn(int &total, const std::string &femaleColor) {
 		list->sex = "Female";
 		break;
 	default:
-		std::cout << "Error in function generate (sex)!\a\n";
+		insertFile("Error in funcion generate (sex)\a\n", 5);
 	}
 
 	//Decides color of the bunny
@@ -263,10 +281,71 @@ void spawn(int &total, const std::string &femaleColor) {
 			list->color = "White";
 			break;
 		default:
-			std::cout << "Error in funcion generate (color)\a\n";
+			insertFile("Error in funcion generate (color)\a\n", 5);
 		}
 	else
 		list->color = femaleColor;
+
+	//Decides xy of bunny
+	bool finished = false;
+	if (femaleColor == "NULL") {
+		
+		//Checks so bunny won't overwrite
+		while (finished == false) {
+			int tempx = rand() % 80;
+			int tempy = rand() % 80;
+			if (grid[tempx][tempy] == '.') {
+				list->x = tempx;
+				list->y = tempy;
+				finished = true;
+			}
+		}
+	}
+	else
+		//Checks so bunny won't overwrite
+	bool finished = false;
+	for (int counter = 0; counter < 10, finished == false; counter++) {
+			switch (rand() % 3) {
+			case 0:
+				if (grid[femalex - 1][femaley] == '.') {
+					list->x = femalex - 1;
+					list->y = femaley;
+					finished = true;
+				}
+				break;
+			case 1:
+				if (grid[femalex + 1][femaley] == '.') {
+					list->x = femalex + 1;
+					list->y = femaley;
+					finished = true;
+				}
+				break;
+			case 2:
+				if (grid[femalex][femaley - 1] == '.') {
+					list->x = femalex;
+					list->y = femaley - 1;
+					finished = true;
+				}
+				break;
+			case 3:
+				if (grid[femalex][femaley + 1] == '.') {
+					list->x = femalex;
+					list->y = femaley + 1;
+					finished = true;
+				}
+				break;
+			default:
+				insertFile("Error in function spawn(unkown value under //checks so bunny won;t overwrite\a\n", 5);
+				break;
+			}
+
+			//Lost child (cheap way to dodge infinite loop)
+			if (counter == 9) {
+				list->x = rand() % 80;
+				list->y = rand() % 80;
+				std::cout << counter << " loop\n";
+			}
+		}
 
 	//Decides radioactiveMutantVampiteBunny
 	list->radioactiveMutantVampireBunny = (rand() % 100 >= 98) ? true : false;
@@ -307,6 +386,7 @@ void kill(int &total, const bool &viaOverPopulation) {
 			//Initiate death by age
 			if (destructor->age == 10 && destructor->radioactiveMutantVampireBunny == false || destructor->age == 50 && destructor->radioactiveMutantVampireBunny == true || viaOverPopulation == true) {
 				insertFile(" died!\n", 2);
+				grid[destructor->x][destructor->y] = '.';
 				if (counter == 0) 
 					root = root->next;
 				else if (destructor->next != nullptr)
@@ -332,7 +412,7 @@ void print(const int &turn) {
 
 	//Fail-safe if no bunnies are found (otherwise will result in a crash)
 	if (root != nullptr) {
-
+		
 		//Sorts list descending from age
 		list = root;
 		for (int i = 50; i >= 0; i--) {
@@ -349,20 +429,99 @@ void print(const int &turn) {
 		}
 		insertFile("\n", 5);
 		sleep;
+		
+		//Prints grid
+		for (int x = 0; x < 80; x++) {
+			for (int y = 0; y < 80; y++) 
+				insertFile("", 6, 0, grid[x][y]);
+			insertFile("\n", 5);
+		}
+		insertFile("\n", 5);
+		sleep;
 	}
 	else 
 		insertFile("No bunnies to be found!\n", 5);
 	sleep;
 }
 
-void insertFile(const std::string &info, const int &phase, const int &extra) {
+void insertGrid() {
+	if (list != nullptr)
+	list = root;
+		while (list != nullptr) {
+
+			//Updates bunny icon
+			if (list->radioactiveMutantVampireBunny == true)
+				list->icon = 'X';
+			else if (list->sex == "Male") {
+				if (list->age > 2)
+					list->icon = 'M';
+				else
+					list->icon = 'm';
+			}
+			else if (list->sex == "Female") {
+				if (list->age > 2)
+					list->icon = 'F';
+				else
+					list->icon = 'f';
+			}
+
+			//Moves bunny
+			bool moved = false;
+			for (int counter = 0; counter < 10, moved == false; counter++) {
+				switch (rand() % 3) {
+				case 0:
+					if (grid[list->x - 1][list->y] == '.' && list->x != 0) {
+						grid[list->x][list->y] = '.';
+						list->x -= 1;
+						moved = true;
+					}
+					break;
+				case 1:
+					if (grid[list->x + 1][list->y] == '.' && list->x != 97) {
+						grid[list->x][list->y] = '.';
+						list->x += 1;
+						moved = true;
+					}
+					break;
+				case 2:
+					if (grid[list->x][list->y - 1] == '.' && list->y != 0) {
+						grid[list->x][list->y] = '.';
+						list->y -= 1;
+						moved = true;
+					}
+					break;
+				case 3:
+					if (grid[list->x][list->y + 1] == '.' && list->y != 97) {
+						grid[list->x][list->y] = '.';
+						list->y += 1;
+						moved = true;
+					}
+					break;
+				default:
+					insertFile("Error in function generateValue (unkown random value at moves bunny)\a\n", 5);
+					break;
+				}
+				 	std::cout << counter <<" Warning overflow chance incoming\n";
+				if (counter == 9)
+					moved = true;
+			}
+
+			//Inserts bunnies into grid
+			grid[list->x][list->y] = list->icon;
+
+			list = list->next;
+		}
+}
+
+void insertFile(const std::string &info, const int &phase, const int &extra, const char &xy) {
 	/*
 	Phases
 	 Phase 1: _INFO_ _NAME_ \n
 	 Phase 2: (Radioactive mutant vampire )bunny _NAME_ _INFO_
 	 Phase 3: for funtion print
 	 Phase 4: \nTurn _EXTRA_ _INFO_
-	 phase 5: _INFO_
+	 Phase 5: _INFO_
+	 Phase 6: for print grid
 	*/
 
 	std::ofstream output ("output.txt", std::ios::out | std::ios::app);
@@ -394,9 +553,13 @@ void insertFile(const std::string &info, const int &phase, const int &extra) {
 			output << info;
 			std::cout << info;
 			break;
+		case 6:
+			output << xy;
+			std::cout << xy;
+			break;
 		default:
-			std::cout << "AN ERROR OCCURED! (function insertFile unknown phase value)\n";
-			output << "AN ERROR OCCURED! (function insertFile unknown phase value)\n";
+			std::cout << "Error in function insertFile (unknown phase value)\a\n";
+			output << "Error in function insertFile (unknown phase value)\a\n";
 			sleep;
 			break;
 		}
@@ -404,8 +567,8 @@ void insertFile(const std::string &info, const int &phase, const int &extra) {
 	}
 	else
 	{
-		std::cout << "AN ERROR OCCURED! (output.txt can't be opened)\n";
-		output << "AN ERROR OCCURED! (output.txt can't be opened)\n";
+		std::cout << "Error in function insertFile (else)\a\n";
 		sleep;
 	}
+
 }
